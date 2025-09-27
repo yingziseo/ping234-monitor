@@ -695,6 +695,26 @@ function RoutesModule({ showToast }: { showToast: (message: string, type: 'succe
 function LinksModule({ showToast }: { showToast: (message: string, type: 'success' | 'error' | 'info') => void }) {
   const { friendLinks, addFriendLink, removeFriendLink } = useMonitorStore();
   const [newLink, setNewLink] = useState({ title: '', url: '' });
+  const [applications, setApplications] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState('links');
+
+  // 加载申请数据
+  const loadApplications = async () => {
+    try {
+      const response = await fetch('/api/apply-link');
+      if (response.ok) {
+        const data = await response.json();
+        setApplications(data.applications || []);
+      }
+    } catch (error) {
+      console.error('Failed to load applications:', error);
+    }
+  };
+
+  // 组件加载时获取申请数据
+  useEffect(() => {
+    loadApplications();
+  }, []);
 
   const handleAddLink = () => {
     if (!newLink.title || !newLink.url) {
@@ -706,49 +726,169 @@ function LinksModule({ showToast }: { showToast: (message: string, type: 'succes
     showToast('友链已添加', 'success');
   };
 
+  // 审核申请
+  const handleReviewApplication = async (id: string, action: 'approve' | 'reject') => {
+    try {
+      const response = await fetch('/api/apply-link', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, action })
+      });
+
+      if (response.ok) {
+        if (action === 'approve') {
+          // 找到被批准的申请
+          const approvedApp = applications.find(app => app.id === id);
+          if (approvedApp) {
+            // 自动添加到友情链接
+            addFriendLink({
+              id: approvedApp.id,
+              title: approvedApp.siteName,
+              url: approvedApp.siteUrl
+            });
+          }
+        }
+
+        showToast(`申请已${action === 'approve' ? '通过' : '拒绝'}`, 'success');
+        loadApplications(); // 重新加载申请列表
+      } else {
+        showToast('操作失败', 'error');
+      }
+    } catch (error) {
+      showToast('操作失败', 'error');
+    }
+  };
+
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <input
-          type="text"
-          value={newLink.title}
-          onChange={(e) => setNewLink({ ...newLink, title: e.target.value })}
-          className="p-3 border border-terminal-border bg-terminal-button-bg text-terminal-fg rounded"
-          placeholder="链接名称"
-        />
-        <input
-          type="text"
-          value={newLink.url}
-          onChange={(e) => setNewLink({ ...newLink, url: e.target.value })}
-          className="p-3 border border-terminal-border bg-terminal-button-bg text-terminal-fg rounded"
-          placeholder="链接地址"
-        />
+      {/* 标签页导航 */}
+      <div className="flex space-x-1 bg-terminal-header-bg p-1 rounded-lg border border-terminal-border">
+        <button
+          onClick={() => setActiveTab('links')}
+          className={`flex-1 py-2 px-4 rounded-md font-medium transition-colors ${
+            activeTab === 'links'
+              ? 'bg-terminal-button-bg text-terminal-fg border border-terminal-green'
+              : 'text-terminal-gray hover:text-terminal-fg'
+          }`}
+        >
+          友情链接管理 ({friendLinks.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('applications')}
+          className={`flex-1 py-2 px-4 rounded-md font-medium transition-colors ${
+            activeTab === 'applications'
+              ? 'bg-terminal-button-bg text-terminal-fg border border-terminal-green'
+              : 'text-terminal-gray hover:text-terminal-fg'
+          }`}
+        >
+          申请审核 ({applications.length})
+        </button>
       </div>
-      <button
-        onClick={handleAddLink}
-        className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-      >
-        添加友链
-      </button>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {friendLinks.map((link) => (
-          <div key={link.id} className="p-4 bg-terminal-header-bg border border-terminal-border rounded">
-            <div className="flex justify-between items-start">
-              <div className="flex-1">
-                <h4 className="font-medium text-terminal-fg">{link.title}</h4>
-                <p className="text-sm text-terminal-cyan">{link.url}</p>
-              </div>
-              <button
-                onClick={() => removeFriendLink(link.id)}
-                className="ml-2 px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
-              >
-                删除
-              </button>
-            </div>
+      {/* 友情链接管理 */}
+      {activeTab === 'links' && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input
+              type="text"
+              value={newLink.title}
+              onChange={(e) => setNewLink({ ...newLink, title: e.target.value })}
+              className="p-3 border border-terminal-border bg-terminal-button-bg text-terminal-fg rounded"
+              placeholder="链接名称"
+            />
+            <input
+              type="text"
+              value={newLink.url}
+              onChange={(e) => setNewLink({ ...newLink, url: e.target.value })}
+              className="p-3 border border-terminal-border bg-terminal-button-bg text-terminal-fg rounded"
+              placeholder="链接地址"
+            />
           </div>
-        ))}
-      </div>
+          <button
+            onClick={handleAddLink}
+            className="px-6 py-2 bg-terminal-green text-white rounded hover:opacity-80"
+          >
+            添加友链
+          </button>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {friendLinks.map((link) => (
+              <div key={link.id} className="p-4 bg-terminal-header-bg border border-terminal-border rounded">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <h4 className="font-medium text-terminal-fg">{link.title}</h4>
+                    <p className="text-sm text-terminal-cyan">{link.url}</p>
+                  </div>
+                  <button
+                    onClick={() => removeFriendLink(link.id)}
+                    className="ml-2 px-2 py-1 bg-terminal-red text-white rounded hover:opacity-80 text-sm"
+                  >
+                    删除
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 申请审核 */}
+      {activeTab === 'applications' && (
+        <div className="space-y-4">
+          {applications.length === 0 ? (
+            <div className="text-center text-terminal-gray py-8">
+              暂无友情链接申请
+            </div>
+          ) : (
+            applications.map((app) => (
+              <div key={app.id} className="p-4 bg-terminal-header-bg border border-terminal-border rounded">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <div>
+                      <span className="text-xs text-terminal-gray">网站名称:</span>
+                      <p className="font-medium text-terminal-fg">{app.siteName}</p>
+                    </div>
+                    <div>
+                      <span className="text-xs text-terminal-gray">网站地址:</span>
+                      <p className="text-sm text-terminal-cyan break-all">{app.siteUrl}</p>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div>
+                      <span className="text-xs text-terminal-gray">申请语言:</span>
+                      <p className="text-sm text-terminal-fg">{app.language === 'zh' ? '简体中文' : app.language === 'tw' ? '繁体中文' : '英文'}</p>
+                    </div>
+                    <div>
+                      <span className="text-xs text-terminal-gray">申请时间:</span>
+                      <p className="text-sm text-terminal-fg">{new Date(app.timestamp).toLocaleString()}</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-2 mt-4">
+                  <button
+                    onClick={() => handleReviewApplication(app.id, 'approve')}
+                    className="px-4 py-2 bg-terminal-green text-white rounded hover:opacity-80 text-sm"
+                  >
+                    通过
+                  </button>
+                  <button
+                    onClick={() => handleReviewApplication(app.id, 'reject')}
+                    className="px-4 py-2 bg-terminal-red text-white rounded hover:opacity-80 text-sm"
+                  >
+                    拒绝
+                  </button>
+                  <button
+                    onClick={() => window.open(app.siteUrl, '_blank')}
+                    className="px-4 py-2 bg-terminal-cyan text-white rounded hover:opacity-80 text-sm"
+                  >
+                    访问网站
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
     </div>
   );
 }

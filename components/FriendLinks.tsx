@@ -10,34 +10,23 @@ export default function FriendLinks() {
   if (!friendLinks || friendLinks.length === 0) return null;
 
   return (
-    <div className="mt-8 pt-6 border-t border-terminal-gray border-opacity-30">
-      <div className="text-center mb-4">
-        <h3 className="text-terminal-cyan text-sm font-medium">{t.friendLinks}</h3>
-      </div>
-
-      <div className="flex flex-wrap justify-center gap-3 md:gap-4 text-xs md:text-sm">
-        {friendLinks.map((link) => (
-          <a
-            key={link.id}
-            href={link.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-terminal-gray hover:text-terminal-green transition-colors
-                     hover:underline cursor-pointer"
-          >
-            {link.title}
-          </a>
+    <div className="mt-2">
+      <div className="text-center text-xs">
+        <span className="text-terminal-fg opacity-60">{t.friendLinks}：</span>
+        {friendLinks.map((link, index) => (
+          <span key={link.id}>
+            <a
+              href={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-terminal-cyan hover:text-terminal-fg transition-colors
+                       hover:underline cursor-pointer ml-1"
+            >
+              {link.title}
+            </a>
+            {index < friendLinks.length - 1 && <span className="text-terminal-fg opacity-60 mx-1">|</span>}
+          </span>
         ))}
-      </div>
-
-      <div className="text-center mt-4">
-        <button
-          onClick={() => window.open('/admin', '_blank')}
-          className="text-xs text-terminal-gray opacity-50 hover:text-terminal-cyan hover:opacity-100
-                   transition-colors cursor-pointer"
-        >
-          {t.applyLink}
-        </button>
       </div>
     </div>
   );

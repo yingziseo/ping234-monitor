@@ -3,12 +3,26 @@ import { promises as fs } from 'fs';
 import path from 'path';
 
 const dataFilePath = path.join(process.cwd(), 'data', 'ads.json');
+const friendLinksFilePath = path.join(process.cwd(), 'data', 'friendLinks.json');
 
 export async function GET() {
   try {
     const fileContents = await fs.readFile(dataFilePath, 'utf8');
     const data = JSON.parse(fileContents);
-    return NextResponse.json(data);
+
+    // 读取友情链接数据
+    let friendLinks = [];
+    try {
+      const friendLinksContents = await fs.readFile(friendLinksFilePath, 'utf8');
+      friendLinks = JSON.parse(friendLinksContents);
+    } catch (friendLinksError) {
+      // 友情链接文件不存在时使用空数组
+    }
+
+    return NextResponse.json({
+      ...data,
+      friendLinks
+    });
   } catch (error) {
     return NextResponse.json({
       topAds: [],

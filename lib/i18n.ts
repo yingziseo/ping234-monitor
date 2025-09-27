@@ -40,6 +40,7 @@ export const translations = {
     adSponsor: '广告赞助商',
     placeAd: '投放广告赞助',
     contactAd: '投放广告请联系：ad@ping234.com',
+    applyLink: '申请友情链接',
 
     // 网络质量
     networkQualityReport: '网络质量统计报告：',
@@ -108,8 +109,38 @@ export const translations = {
 
     // 底部
     onlineNetworkTool: '在线网络检测工具',
-    tips: '提示: 使用 Ctrl+C 停止 | 支持移动端访问',
-    copyright: '© 2024 ping234.com All Rights Reserved',
+    tips: '支持移动端访问 | 多语言支持',
+    copyright: '© 2006-2025 ping234.com All Rights Reserved',
+
+    // 走马灯通知
+    marqueeNotice: '原域名已经转移，启用全新域名 ping234.com. 继续为大家提供服务。',
+
+    // 联系我们
+    contactUs: '联系我们',
+    email: '邮箱',
+    telegram: 'Telegram',
+
+    // 友情链接申请页面
+    friendLinkApplication: '友情链接申请',
+    welcomeMessage: '欢迎与我们交换友情链接，共同促进网站发展',
+    applicationRequirements: '申请须知：',
+    req1: '网站内容健康，无违法违规信息',
+    req2: '网站正常运营，访问稳定',
+    req3: '需要先添加我们的友情链接',
+    req4: '友情链接名称不超过20个字符',
+    req5: '我们将在24小时内审核您的申请',
+    step1: '第一步：请先添加我们的友情链接',
+    siteName: '网站名称',
+    siteAddress: '网站地址（请选择适合您网站的语言版本）',
+    step2: '第二步：填写您的网站信息',
+    yourSiteName: '网站名称',
+    yourSiteUrl: '网站地址',
+    confirmBacklink: '我已在网站中添加了ping234的友情链接',
+    captcha: '验证码',
+    captchaAnswer: '答案',
+    submitApplication: '提交申请',
+    currentFriendLinks: '当前友情链接',
+    linkDisplayAfterApproval: '友情链接申请通过后，将在此处显示',
   },
 
   tw: {
@@ -153,6 +184,7 @@ export const translations = {
     adSponsor: '廣告贊助商',
     placeAd: '投放廣告贊助',
     contactAd: '投放廣告請聯繫：ad@ping234.com',
+    applyLink: '申請友情連結',
 
     // 網路品質
     networkQualityReport: '網路品質統計報告：',
@@ -222,8 +254,38 @@ export const translations = {
 
     // 底部
     onlineNetworkTool: '線上網路檢測工具',
-    tips: '提示: 使用 Ctrl+C 停止 | 支援行動裝置訪問',
-    copyright: '© 2024 ping234.com All Rights Reserved',
+    tips: '支援行動裝置訪問 | 多語言支援',
+    copyright: '© 2006-2025 ping234.com All Rights Reserved',
+
+    // 走馬燈通知
+    marqueeNotice: '原域名已經轉移，啟用全新域名 ping234.com. 繼續為大家提供服務。',
+
+    // 聯繫我們
+    contactUs: '聯繫我們',
+    email: '郵箱',
+    telegram: 'Telegram',
+
+    // 友情連結申請頁面
+    friendLinkApplication: '友情連結申請',
+    welcomeMessage: '歡迎與我們交換友情連結，共同促進網站發展',
+    applicationRequirements: '申請須知：',
+    req1: '網站內容健康，無違法違規資訊',
+    req2: '網站正常運營，訪問穩定',
+    req3: '需要先添加我們的友情連結',
+    req4: '友情連結名稱不超過20個字符',
+    req5: '我們將在24小時內審核您的申請',
+    step1: '第一步：請先添加我們的友情連結',
+    siteName: '網站名稱',
+    siteAddress: '網站地址（請選擇適合您網站的語言版本）',
+    step2: '第二步：填寫您的網站資訊',
+    yourSiteName: '網站名稱',
+    yourSiteUrl: '網站地址',
+    confirmBacklink: '我已在網站中添加了ping234的友情連結',
+    captcha: '驗證碼',
+    captchaAnswer: '答案',
+    submitApplication: '提交申請',
+    currentFriendLinks: '當前友情連結',
+    linkDisplayAfterApproval: '友情連結申請通過後，將在此處顯示',
   },
 
   en: {
@@ -267,6 +329,7 @@ export const translations = {
     adSponsor: 'Ad Sponsor',
     placeAd: 'Place Ad Sponsorship',
     contactAd: 'Contact for ads: ad@ping234.com',
+    applyLink: 'Apply Friend Link',
 
     // Network Quality
     networkQualityReport: 'Network Quality Report:',
@@ -336,8 +399,38 @@ export const translations = {
 
     // Footer
     onlineNetworkTool: 'Online Network Detection Tool',
-    tips: 'Tips: Use Ctrl+C to stop | Mobile supported',
-    copyright: '© 2024 ping234.com All Rights Reserved',
+    tips: 'Mobile supported | Multi-language support',
+    copyright: '© 2006-2025 ping234.com All Rights Reserved',
+
+    // Marquee Notice
+    marqueeNotice: 'Original domain has been transferred, new domain ping234.com is now in use. Continuing to serve everyone.',
+
+    // Contact Us
+    contactUs: 'Contact Us',
+    email: 'Email',
+    telegram: 'Telegram',
+
+    // Friend Link Application Page
+    friendLinkApplication: 'Friend Link Application',
+    welcomeMessage: 'Welcome to exchange friend links with us for mutual website development',
+    applicationRequirements: 'Application Requirements:',
+    req1: 'Website content is healthy with no illegal content',
+    req2: 'Website operates normally with stable access',
+    req3: 'Must add our friend link first',
+    req4: 'Friend link name should not exceed 20 characters',
+    req5: 'We will review your application within 24 hours',
+    step1: 'Step 1: Please add our friend link first',
+    siteName: 'Site Name',
+    siteAddress: 'Site Address (Please choose the appropriate language version for your website)',
+    step2: 'Step 2: Fill in your website information',
+    yourSiteName: 'Your Site Name',
+    yourSiteUrl: 'Your Site URL',
+    confirmBacklink: 'I have added ping234\'s friend link to my website',
+    captcha: 'Captcha',
+    captchaAnswer: 'Answer',
+    submitApplication: 'Submit Application',
+    currentFriendLinks: 'Current Friend Links',
+    linkDisplayAfterApproval: 'Friend links will be displayed here after approval',
   }
 };
 

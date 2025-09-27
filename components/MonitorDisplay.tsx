@@ -5,7 +5,13 @@ import { useMonitorStore } from '@/lib/store';
 import { getStatusClass, getStatusText, formatTime, calculateStats, getJitterLevel } from '@/lib/utils';
 import { getTranslation } from '@/lib/i18n';
 
-export default function MonitorDisplay() {
+interface MonitorDisplayProps {
+  onStop?: () => void;
+  onStart?: () => void;
+  onReset?: () => void;
+}
+
+export default function MonitorDisplay({ onStop, onStart, onReset }: MonitorDisplayProps = {}) {
   const {
     monitoringDomains,
     isMonitoring,
@@ -22,12 +28,28 @@ export default function MonitorDisplay() {
 
   const [checkCount, setCheckCount] = useState(0);
   const [sessionStart] = useState(new Date());
+  const [showFloatingNav, setShowFloatingNav] = useState(false);
   const monitoringRef = useRef(isMonitoring);
+  const statusBarRef = useRef<HTMLDivElement>(null);
 
   // 同步ref值
   useEffect(() => {
     monitoringRef.current = isMonitoring;
   }, [isMonitoring]);
+
+  // 监听滚动，控制悬浮导航显示
+  useEffect(() => {
+    const handleScroll = () => {
+      if (statusBarRef.current) {
+        const rect = statusBarRef.current.getBoundingClientRect();
+        // 当原始状态栏不在视窗内时显示悬浮导航
+        setShowFloatingNav(rect.bottom < 0);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     if (!isMonitoring) return;
@@ -193,8 +215,46 @@ export default function MonitorDisplay() {
 
   return (
     <div className="space-y-6">
-      {/* 状态栏 */}
-      <div className="flex flex-wrap gap-4 text-xs md:text-sm text-terminal-gray">
+      {/* 悬浮导航栏 - 只在滚动时显示 */}
+      {showFloatingNav && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-terminal-window-bg border-b border-terminal-border shadow-lg">
+          <div className="max-w-7xl mx-auto px-4 py-2">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              {/* 状态信息 */}
+              <div className="flex flex-wrap gap-2 sm:gap-4 text-xs sm:text-sm text-terminal-fg">
+                <span>{t.runningTime}: <span className="text-terminal-green">{getSessionTime()}</span></span>
+                <span>{t.checkCount}: <span className="text-terminal-cyan">{checkCount}</span></span>
+                <span>{t.online}: <span className="text-terminal-green">{stats.online}</span></span>
+                <span>{t.offline}: <span className="text-terminal-red">{stats.offline}</span></span>
+                <span>{t.avgDelay}: <span className="text-terminal-yellow">{stats.avgPing.toFixed(0)}ms</span></span>
+              </div>
+
+              {/* 操作按钮 */}
+              <div className="flex gap-2 w-full sm:w-auto justify-center sm:justify-end">
+                <button
+                  onClick={onReset}
+                  className="terminal-button px-3 py-1 text-xs text-terminal-red border-terminal-red hover:bg-terminal-fg/10"
+                >
+                  [{t.backToHome}]
+                </button>
+                <button
+                  onClick={isMonitoring ? onStop : onStart}
+                  className={`terminal-button px-3 py-1 text-xs ${
+                    isMonitoring
+                      ? 'text-terminal-yellow border-terminal-yellow hover:bg-terminal-yellow/10'
+                      : 'text-terminal-green border-terminal-green hover:bg-terminal-green/10'
+                  }`}
+                >
+                  [{isMonitoring ? t.stopDetection : t.continueDetection}]
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 原始状态栏 */}
+      <div ref={statusBarRef} className="flex flex-wrap gap-4 text-xs md:text-sm text-terminal-fg">
         <span>{t.runningTime}: <span className="text-terminal-green">{getSessionTime()}</span></span>
         <span>{t.checkCount}: <span className="text-terminal-cyan">{checkCount}</span></span>
         <span>{t.online}: <span className="text-terminal-green">{stats.online}</span></span>
@@ -224,12 +284,12 @@ export default function MonitorDisplay() {
               const ad = getAdForIndex(index);
 
               return (
-                <tr key={domain} className="hover:bg-terminal-gray/10 transition-colors">
+                <tr key={domain} className="hover:bg-terminal-fg/5 transition-colors">
                   <td className="text-terminal-gray">{index + 1}</td>
                   <td>
                     <button
                       onClick={() => handleDomainClick(domain)}
-                      className="text-terminal-cyan hover:text-terminal-green hover:underline
+                      className="text-terminal-cyan hover:text-terminal-fg hover:underline
                                transition-colors cursor-pointer text-left"
                     >
                       <span className="truncate block max-w-[200px] md:max-w-none">
@@ -270,8 +330,8 @@ export default function MonitorDisplay() {
                         }}
                         className={`text-xs hover:underline transition-colors cursor-pointer font-bold ${
                           ad.isPlaceholder
-                            ? 'text-terminal-gray opacity-60 hover:text-terminal-cyan hover:opacity-100'
-                            : 'text-terminal-cyan hover:text-terminal-green'
+                            ? 'text-terminal-fg opacity-60 hover:opacity-100'
+                            : 'text-terminal-cyan hover:text-terminal-fg'
                         }`}
                       >
                         {typeof ad.text === 'object' ? (ad.text[language] || ad.text.zh || ad.text.en) : ad.text}
@@ -279,7 +339,7 @@ export default function MonitorDisplay() {
                     ) : (
                       <button
                         onClick={() => alert(t.contactAd)}
-                        className="text-xs text-terminal-gray opacity-60 hover:text-terminal-cyan hover:opacity-100
+                        className="text-xs text-terminal-fg opacity-60 hover:opacity-100
                                  hover:underline transition-colors cursor-pointer font-bold"
                       >
                         {t.placeAd}
@@ -311,9 +371,9 @@ export default function MonitorDisplay() {
                 }
               }}
               className={`bg-terminal-gray bg-opacity-10 border border-terminal-gray border-opacity-30 p-2 rounded
-                       text-center text-xs cursor-pointer font-bold hover:bg-terminal-gray/20 transition-colors ${
+                       text-center text-xs cursor-pointer font-bold hover:bg-terminal-fg/10 transition-colors ${
                 ad.isPlaceholder
-                  ? 'text-terminal-gray opacity-60'
+                  ? 'text-terminal-fg opacity-60'
                   : 'text-terminal-cyan'
               }`}
             >
@@ -335,7 +395,7 @@ export default function MonitorDisplay() {
               if (!domainStats) return null;
 
               return (
-                <div key={domain} className="space-y-1 text-terminal-gray">
+                <div key={domain} className="space-y-1 text-terminal-fg">
                   <div className="text-terminal-cyan font-medium truncate">{domain}</div>
                   <div>{t.min}: {domainStats.min.toFixed(0)}ms</div>
                   <div>{t.max}: {domainStats.max.toFixed(0)}ms</div>
@@ -355,18 +415,18 @@ export default function MonitorDisplay() {
           <div className="flex flex-wrap gap-3 text-xs md:text-sm">
             <button
               onClick={downloadCSV}
-              className="terminal-button px-4 py-2 text-terminal-green border-terminal-green hover:bg-terminal-green hover:bg-opacity-10"
+              className="terminal-button px-4 py-2 text-terminal-green border-terminal-green hover:bg-terminal-fg/10"
             >
               📊 {t.downloadCSV}
             </button>
             <button
               onClick={downloadJSON}
-              className="terminal-button px-4 py-2 text-terminal-cyan border-terminal-cyan hover:bg-terminal-cyan hover:bg-opacity-10"
+              className="terminal-button px-4 py-2 text-terminal-cyan border-terminal-cyan hover:bg-terminal-fg/10"
             >
               📄 {t.downloadJSON}
             </button>
           </div>
-          <div className="mt-3 text-xs text-terminal-gray">
+          <div className="mt-3 text-xs text-terminal-fg">
             💾 {t.generateReport}：包含完整检测数据、统计信息和时间戳
           </div>
         </div>
