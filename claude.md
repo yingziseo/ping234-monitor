@@ -325,10 +325,140 @@ A: 项目本身不包含计费系统，需要线下协商广告投放
 - 广告系统多语言化
 - 管理后台功能完善
 
+### v1.2.0 (2025-10-08)
+#### 新增功能
+- ✅ **IP地址查询功能**
+  - 精准的IP归属地查询
+  - IP地理位置显示（地图可视化）
+  - 安全风险评估（威胁IP检测）
+  - ASN信息查询
+  - 运营商信息显示
+  - 多语言支持（zh/tw/en）
+
+- ✅ **IP泄露检测功能**
+  - WebRTC泄露测试（7个STUN服务器并发检测）
+  - 支持检测VPN/代理是否泄露真实IP
+  - 媒体设备权限检测
+  - 详细的检测结果展示
+  - 如何禁用WebRTC的指南
+
+- ✅ **SEO优化**
+  - 所有页面添加完整的TDK（Title, Description, Keywords）
+  - OpenGraph社交媒体优化
+  - 多语言SEO内容（zh/tw/en）
+  - hreflang语言标注
+
+- ✅ **统一组件**
+  - Footer组件统一应用到所有页面
+  - Navigation组件支持页面间导航
+  - 走马灯通知组件
+  - ICO图标
+
+#### 性能优化
+- ✅ **并发检测优化**
+  - 网络检测从串行改为并发（Promise.all）
+  - 检测速度从~300s优化到~3s（100个域名）
+  - STUN服务器并发检测提升IP泄露检测速度
+
+- ✅ **主题加载优化**
+  - 添加内联脚本避免主题闪烁（FOUC）
+  - 默认明亮主题直接应用于HTML标签
+  - localStorage主题同步加载
+
+#### API集成
+- ✅ **IP查询API**
+  - 使用ipdata.co API（专业IP数据服务）
+  - API Key: 5d21b61c0c479cd13f765645c787599fab0405397969151b82207441
+  - 端点: `/api/ip-query`
+
+- ✅ **IP泄露检测API**
+  - 使用ip2location.io API
+  - API Key: 5617458807E70FC1D0BC1E10B6876CBB
+  - 端点: `/api/ip-leak-query`
+
+#### UI/UX改进
+- ✅ 修复多处翻译缺失问题
+  - `detecting` - "检测中"
+  - `stopDetection` - "暂停检测"
+  - `detectMyIp` - "检测我的IP"
+  - `startDetection` - "开始检测"
+  - `applyLink` - "申请友链"
+
+- ✅ IP查询页面安全评分显示修复
+  - 动态颜色显示（绿色=安全，黄色=中等风险，红色=高风险）
+  - 风险评分计算优化
+
+- ✅ 默认主题更改
+  - 从暗色主题改为明亮主题
+  - 避免首次加载时的主题闪烁
+  - 添加内联脚本在HTML加载前设置主题
+  - 解决FOUC（Flash of Unstyled Content）问题
+
+- ✅ ICO图标优化
+  - 白色背景 + 黑色字母P
+  - 90度直角正方形设计（无圆角）
+  - 字体大小优化到85px，更显眼
+
+#### 文件结构更新
+```
+新增文件：
+├── app/
+│   ├── api/
+│   │   ├── ip-query/route.ts          # IP查询API路由
+│   │   └── ip-leak-query/route.ts     # IP泄露检测API路由
+│   ├── ip-query/page.tsx              # IP查询页面
+│   ├── ip-leak/page.tsx               # IP泄露检测页面
+│   ├── cn/
+│   │   ├── ip-query/
+│   │   │   ├── page.tsx
+│   │   │   └── layout.tsx             # 简体中文SEO
+│   │   └── ip-leak/
+│   │       ├── page.tsx
+│   │       └── layout.tsx             # 简体中文SEO
+│   ├── tw/
+│   │   ├── ip-query/
+│   │   │   ├── page.tsx
+│   │   │   └── layout.tsx             # 繁体中文SEO
+│   │   └── ip-leak/
+│   │       ├── page.tsx
+│   │       └── layout.tsx             # 繁体中文SEO
+│   ├── en/
+│   │   ├── ip-query/
+│   │   │   ├── page.tsx
+│   │   │   └── layout.tsx             # 英文SEO
+│   │   └── ip-leak/
+│   │       ├── page.tsx
+│   │       └── layout.tsx             # 英文SEO
+│   └── icon.svg                        # 网站ICO图标
+├── components/
+│   ├── Footer.tsx                      # 统一底部组件
+│   ├── Navigation.tsx                  # 导航组件
+│   ├── MarqueeNotice.tsx              # 走马灯通知
+│   └── IPMap.tsx                       # IP地图组件
+```
+
+#### 技术债务修复
+- ✅ 移除不可用的STUN服务器（QQ/Tencent, Aliyun, Nextcloud）
+- ✅ 替换为可靠的国际STUN服务器（Google, Cloudflare, Twilio, Ekiga, Voipbuster）
+- ✅ 修复IP泄露检测结果过早显示的问题
+- ✅ 添加`detectionComplete`状态控制结果显示时机
+
+#### 配置更新
+- ✅ i18n文件大幅扩充
+  - 新增IP查询相关翻译（100+条）
+  - 新增IP泄露检测相关翻译（80+条）
+  - 新增SEO内容配置（每种语言3个页面）
+  - 完善所有缺失的翻译项
+
+- ✅ Store状态管理优化
+  - 默认主题改为'light'
+  - SEO配置存储结构
+
 ## 联系方式
 
 - 项目网址: https://ping234.com
 - 广告合作: ad@ping234.com
+- Telegram: https://t.me/ping234
 
 ## 许可证
 
@@ -336,4 +466,4 @@ MIT License
 
 ---
 
-*最后更新: 2024年1月*
+*最后更新: 2025年10月8日*

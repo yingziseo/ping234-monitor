@@ -4,9 +4,9 @@ import { useState, useEffect } from 'react';
 import { useMonitorStore } from '@/lib/store';
 import { getTranslation } from '@/lib/i18n';
 import Terminal from '@/components/Terminal';
-import ThemeLanguageSwitch from '@/components/ThemeLanguageSwitch';
 import Toast from '@/components/Toast';
 import MarqueeNotice from '@/components/MarqueeNotice';
+import Navigation from '@/components/Navigation';
 
 export default function ApplyLinkPage() {
   const { language, theme } = useMonitorStore();
@@ -138,11 +138,10 @@ export default function ApplyLinkPage() {
       <MarqueeNotice />
 
       <div className="p-4">
-        <div className="flex justify-end mb-4">
-          <ThemeLanguageSwitch />
-        </div>
+        {/* 导航栏 */}
+        <Navigation />
 
-      <Terminal title="友情链接申请 - ping234.com">
+      <Terminal title={`${t.friendLinkApplication} - ping234.com`}>
         <div className="space-y-6">
           {/* 页面标题 */}
           <div className="text-center space-y-3">

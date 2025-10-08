@@ -128,7 +128,7 @@ export const useMonitorStore = create<MonitorStore>()(
   topAds: [],
   rotatingAds: [],
   friendLinks: [],
-  theme: 'dark',
+  theme: 'light',
   language: 'zh' as Language,
   seoConfig: {
     zh: {

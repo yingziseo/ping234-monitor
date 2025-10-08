@@ -60,24 +60,30 @@ export default function MonitorDisplay({ onStop, onStart, onReset }: MonitorDisp
 
       setCheckCount(prev => prev + 1);
 
-      for (const domain of monitoringDomains) {
-        // 在每个域名检测前再次检查状态
-        if (!monitoringRef.current) break;
+      // 并发检测所有域名，提高检测速度
+      const checkPromises = monitoringDomains.map(async (domain) => {
+        // 检查状态
+        if (!monitoringRef.current) return;
 
         try {
-          // 模拟检测（实际环境中需要通过API）
+          // 并发检测域名
           const ping = await checkDomain(domain);
 
           // 检测完成后再次检查状态
-          if (!monitoringRef.current) break;
+          if (!monitoringRef.current) return;
 
           updateResult(domain, ping);
           updateHistory(domain, ping);
         } catch (error) {
-          // 如果检测被中断，直接退出
-          if (!monitoringRef.current) break;
+          // 检测失败时也要更新结果（超时）
+          if (!monitoringRef.current) return;
+          updateResult(domain, -1); // -1表示超时或失败
+          updateHistory(domain, -1);
         }
-      }
+      });
+
+      // 等待所有检测完成
+      await Promise.all(checkPromises);
     };
 
     checkDomains();
